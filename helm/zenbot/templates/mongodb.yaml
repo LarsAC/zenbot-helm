@@ -1,0 +1,73 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  labels: {{ include "zenbot.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mongodb
+spec:
+  type: ClusterIP
+  ports:
+    - name: mongodb
+      port: 27017
+      targetPort: 27017
+      protocol: TCP
+  selector: {{ include "zenbot.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mongodb
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "zenbot.fullname" . }}-mongodb
+  labels: {{ include "zenbot.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ include "zenbot.labels" . | nindent 6 }}
+      app.kubernetes.io/component: mongodb
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels: {{ include "zenbot.labels" . | nindent 8 }}
+        app.kubernetes.io/component: mongodb
+    spec:
+      containers:
+        - name: {{ template "zenbot.fullname" . }}-mongodb
+          image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag}}"
+          imagePullPolicy: {{ .Values.mongodb.image.pullPolicy }}
+          # mongod --bind_ip=0.0.0.0 --logpath=/dev/null
+          command: ["mongod", "--bind_ip=0.0.0.0", "--logpath=/dev/null"]
+          ports:
+            - name: mongodb
+              containerPort: 27017
+              protocol: TCP
+          resources: {{ toYaml .Values.mongodb.resources | nindent 12 }}
+      restartPolicy: Always
+      nodeSelector: {{ toYaml .Values.mongodb.nodeSelector | nindent 8 }}
+      affinity:     {{ toYaml .Values.mongodb.affinity     | nindent 8 }}
+      tolerations:  {{ toYaml .Values.mongodb.tolerations  | nindent 8 }}
+      {{ if .Values.mongodb.storage.enabled }}
+      volumes:
+        - name: db-data-volume
+          persistentVolumeClaim:
+            claimName: {{ template "zenbot.fullname" . }}-mongodb-pvc
+      {{ end }}
+---
+{{ if .Values.mongodb.storage.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "zenbot.fullname" . }}-mongodb-pvc
+  labels: {{ include "zenbot.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mongodb
+spec:
+  storageClassName: {{ .Values.mongodb.storage.storageClassName  }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Gi
+{{ end }}

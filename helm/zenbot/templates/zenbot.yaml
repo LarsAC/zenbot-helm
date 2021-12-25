@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zenbot
+  labels: {{ include "zenbot.labels" . | nindent 4 }}
+    app.kubernetes.io/component: zenbot
+spec:
+  type: ClusterIP
+  ports:
+    - name: zenbot
+      port: 17365
+      targetPort: 17365
+      protocol: TCP
+  selector: {{ include "zenbot.labels" . | nindent 4 }}
+    app.kubernetes.io/component: zenbot
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "zenbot.fullname" . }}-zenbot
+  labels: {{ include "zenbot.labels" . | nindent 4 }}
+    app.kubernetes.io/component: zenbot
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ include "zenbot.labels" . | nindent 6 }}
+      app.kubernetes.io/component: zenbot
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels: {{ include "zenbot.labels" . | nindent 8 }}
+        app.kubernetes.io/component: zenbot
+    spec:
+      containers:
+        - name: {{ template "zenbot.fullname" . }}-zenbot
+          image: "{{ .Values.zenbot.image.repository }}:{{ .Values.zenbot.image.tag}}"
+          imagePullPolicy: {{ .Values.zenbot.image.pullPolicy }}
+          # entrypoint /usr/local/bin/zenbot
+          command: ["/usr/local/bin/zenbot", "trade", "--paper"]
+          env:
+          - name: ZENBOT_MONGODB_HOST
+            value: "{{ .Values.zenbot.mongodb_service }}"
+          - name: ZENBOT_BINANCE_API_KEY
+            value: "{{ .Values.zenbot.binance_api_key }}"
+          - name: ZENBOT_BINANCE_SECRET
+            value: "{{ .Values.zenbot.binance_secret }}"
+          - name: ZENBOT_IFTTT_ENABLE
+            value: "{{ .Values.zenbot.iftt_enable }}"
+          - name: ZENBOT_IFTTT_API_KEY
+            value: "{{ .Values.zenbot.iftt_api_key }}"
+          ports:
+            - name: zenbot
+              containerPort: 17365
+              protocol: TCP
+          resources: {{ toYaml .Values.zenbot.resources | nindent 12 }}
+      restartPolicy: Always
+      nodeSelector: {{ toYaml .Values.zenbot.nodeSelector | nindent 8 }}
+      affinity:     {{ toYaml .Values.zenbot.affinity     | nindent 8 }}
+      tolerations:  {{ toYaml .Values.zenbot.tolerations  | nindent 8 }}

@@ -18,6 +18,7 @@ helm install zenbot zenbot/zenbot
 Check out the following options or refer to `values.yaml` for more details.
 
 |Parameter|Default|Comment|
+|---------|-------|-------|
 |zenbot.binance_api_key|none|Provide your Binance API key|
 |zenbot.binance_secret|none|Provide your Binance API secret|
 |zenbot.ifttt_enable|true|Whether to enable notifications via IFTTT|

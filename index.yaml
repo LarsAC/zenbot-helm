@@ -3,12 +3,12 @@ entries:
   zenbot:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2021-12-26T00:42:00.1925405+01:00"
+    created: "2021-12-26T01:19:28.8268336+01:00"
     description: A Helm chart for Kubernetes
-    digest: 9540cbd69e7abefd39ee4ca259f420e947ff5120da8fbaf38bf12edd671e88ed
+    digest: ad57829bb7ab5fb5a28fa93a344c1c69be37ca863ea0cbc94f30d34561479b11
     name: zenbot
     type: application
     urls:
-    - https://larsac.github.io/helm-zenbot/zenbot-0.1.0.tgz
+    - https://larsac.github.io/zenbot-helm/zenbot-0.1.0.tgz
     version: 0.1.0
-generated: "2021-12-26T00:42:00.1908875+01:00"
+generated: "2021-12-26T01:19:28.8250272+01:00"

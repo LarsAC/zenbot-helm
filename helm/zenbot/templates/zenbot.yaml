@@ -48,9 +48,9 @@ spec:
           - name: ZENBOT_BINANCE_SECRET
             value: "{{ .Values.zenbot.binance_secret }}"
           - name: ZENBOT_IFTTT_ENABLE
-            value: "{{ .Values.zenbot.iftt_enable }}"
+            value: "{{ .Values.zenbot.ifttt_enable }}"
           - name: ZENBOT_IFTTT_API_KEY
-            value: "{{ .Values.zenbot.iftt_api_key }}"
+            value: "{{ .Values.zenbot.ifttt_api_key }}"
           ports:
             - name: zenbot
               containerPort: 17365

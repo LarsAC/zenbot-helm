@@ -25,8 +25,8 @@ zenbot:
   mongodb_service: mongodb
   binance_api_key: BINANCE-API-KEY
   binance_secret:  BINANCE-SECRET
-  iftt_enable:     false
-  iftt_api_key:    IFTTT-API-KEY
+  ifttt_enable:     false
+  ifttt_api_key:    IFTTT-API-KEY
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
